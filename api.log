@@ -1,0 +1,255 @@
+2025-05-02 20:48:08,740 - INFO - 正在初始化用户对象 (User object)...
+2025-05-02 20:48:08,741 - INFO - 正在获取用户个人资料...
+2025-05-02 20:48:08,743 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:48:08,926 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-02 20:48:08,927 - INFO - 用户已登录
+2025-05-02 20:48:08,927 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-02 20:48:08,927 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-02 20:48:08,928 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:48:09,141 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-02 20:48:09,143 - INFO - 初始数据加载成功: 56 个任务, 3 个项目, 1 个标签。
+2025-05-02 20:48:09,144 - DEBUG - Initializing server 'FastMCP'
+2025-05-02 20:48:09,144 - DEBUG - Registering handler for ListToolsRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for CallToolRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for PromptListRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for GetPromptRequest
+2025-05-02 20:48:09,145 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-02 20:48:09,161 - INFO - Starting server "FastMCP"...
+2025-05-02 20:48:09,173 - DEBUG - Using proactor: IocpProactor
+2025-05-02 20:50:32,581 - INFO - 正在初始化用户对象 (User object)...
+2025-05-02 20:50:32,582 - INFO - 正在获取用户个人资料...
+2025-05-02 20:50:32,584 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:50:32,774 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-02 20:50:32,775 - INFO - 用户已登录
+2025-05-02 20:50:32,775 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-02 20:50:32,775 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-02 20:50:32,776 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:50:32,982 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-02 20:50:33,020 - INFO - 初始数据加载成功: 56 个任务, 3 个项目, 1 个标签。
+2025-05-02 20:50:33,022 - DEBUG - Initializing server 'FastMCP'
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for ListToolsRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for CallToolRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for PromptListRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for GetPromptRequest
+2025-05-02 20:50:33,022 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-02 20:50:33,037 - INFO - Starting server "FastMCP"...
+2025-05-02 20:50:33,050 - DEBUG - Using proactor: IocpProactor
+2025-05-02 20:50:33,054 - ERROR - 运行 FastMCP 服务时出错: FastMCP.run_stdio_async() got an unexpected keyword argument 'port'
+Traceback (most recent call last):
+  File "E:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\dida_mcp_server.py", line 288, in <module>
+    mcp.run(port=8766)
+    ~~~~~~~^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\fastmcp\server\server.py", line 270, in run
+    anyio.run(partial(self.run_async, transport, **transport_kwargs))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_core\_eventloop.py", line 74, in run
+    return async_backend.run(func, args, {}, backend_options)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2310, in run
+    return runner.run(wrapper())
+           ~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\liuze\scoop\apps\python\3.13.3\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\liuze\scoop\apps\python\3.13.3\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2298, in wrapper
+    return await func(*args)
+           ^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\fastmcp\server\server.py", line 256, in run_async
+    await self.run_stdio_async(**transport_kwargs)
+          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: FastMCP.run_stdio_async() got an unexpected keyword argument 'port'
+2025-05-02 20:50:33,058 - INFO - Starting server "FastMCP"...
+2025-05-02 20:50:33,060 - DEBUG - Using proactor: IocpProactor
+2025-05-02 20:51:21,796 - INFO - 正在初始化用户对象 (User object)...
+2025-05-02 20:51:21,796 - INFO - 正在获取用户个人资料...
+2025-05-02 20:51:21,798 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:51:22,015 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-02 20:51:22,016 - INFO - 用户已登录
+2025-05-02 20:51:22,016 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-02 20:51:22,017 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-02 20:51:22,018 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:51:22,222 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-02 20:51:22,223 - INFO - 初始数据加载成功: 56 个任务, 3 个项目, 1 个标签。
+2025-05-02 20:51:22,225 - DEBUG - Initializing server 'FastMCP'
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for ListToolsRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for CallToolRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for PromptListRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for GetPromptRequest
+2025-05-02 20:51:22,225 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-02 20:51:22,240 - INFO - Starting server "FastMCP"...
+2025-05-02 20:51:22,252 - DEBUG - Using proactor: IocpProactor
+2025-05-02 20:52:16,742 - INFO - 正在初始化用户对象 (User object)...
+2025-05-02 20:52:16,742 - INFO - 正在获取用户个人资料...
+2025-05-02 20:52:16,744 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:52:16,938 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-02 20:52:16,939 - INFO - 用户已登录
+2025-05-02 20:52:16,939 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-02 20:52:16,939 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-02 20:52:16,940 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-02 20:52:17,197 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-02 20:52:17,198 - INFO - 初始数据加载成功: 56 个任务, 3 个项目, 1 个标签。
+2025-05-02 20:52:17,200 - DEBUG - Initializing server 'FastMCP'
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for ListToolsRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for CallToolRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for PromptListRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for GetPromptRequest
+2025-05-02 20:52:17,200 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-02 20:52:17,215 - INFO - Starting server "FastMCP"...
+2025-05-02 20:52:17,227 - DEBUG - Using proactor: IocpProactor
+2025-05-03 16:10:50,597 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:10:50,597 - INFO - 正在获取用户个人资料...
+2025-05-03 16:10:50,600 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:10:52,590 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:10:52,593 - INFO - 用户已登录
+2025-05-03 16:10:52,593 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:10:52,593 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:10:52,595 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:10:52,974 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:10:52,976 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:10:52,979 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:10:52,979 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:10:53,009 - DEBUG - Using proactor: IocpProactor
+2025-05-03 16:38:44,509 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:38:44,510 - INFO - 正在获取用户个人资料...
+2025-05-03 16:38:44,511 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:38:44,706 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:38:44,708 - INFO - 用户已登录
+2025-05-03 16:38:44,708 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:38:44,708 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:38:44,709 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:38:44,913 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:38:44,914 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:38:44,915 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:38:44,916 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:38:44,929 - INFO - Starting server "FastMCP"...
+2025-05-03 16:38:44,940 - DEBUG - Using proactor: IocpProactor
+2025-05-03 16:38:44,944 - ERROR - 运行 FastMCP 服务时捕获到致命错误: FastMCP.run_stdio_async() got an unexpected keyword argument 'debug'
+Traceback (most recent call last):
+  File "E:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\dida_mcp_server.py", line 311, in <module>
+    mcp.run(debug=True) # 尝试运行
+    ~~~~~~~^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\fastmcp\server\server.py", line 270, in run
+    anyio.run(partial(self.run_async, transport, **transport_kwargs))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_core\_eventloop.py", line 74, in run
+    return async_backend.run(func, args, {}, backend_options)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2310, in run
+    return runner.run(wrapper())
+           ~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\liuze\scoop\apps\python\3.13.3\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\liuze\scoop\apps\python\3.13.3\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2298, in wrapper
+    return await func(*args)
+           ^^^^^^^^^^^^^^^^^
+  File "e:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\.venv\Lib\site-packages\fastmcp\server\server.py", line 256, in run_async
+    await self.run_stdio_async(**transport_kwargs)
+          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: FastMCP.run_stdio_async() got an unexpected keyword argument 'debug'
+2025-05-03 16:38:57,178 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:38:57,179 - INFO - 正在获取用户个人资料...
+2025-05-03 16:38:57,180 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:38:57,399 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:38:57,400 - INFO - 用户已登录
+2025-05-03 16:38:57,400 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:38:57,400 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:38:57,401 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:38:57,614 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:38:57,615 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:38:57,617 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:38:57,617 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:38:57,618 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:38:57,632 - INFO - Starting server "FastMCP"...
+2025-05-03 16:38:57,643 - DEBUG - Using proactor: IocpProactor
+2025-05-03 16:42:04,349 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:42:04,349 - INFO - 正在获取用户个人资料...
+2025-05-03 16:42:04,350 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:42:04,532 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:42:04,532 - INFO - 用户已登录
+2025-05-03 16:42:04,533 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:42:04,533 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:42:04,533 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:42:04,749 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:42:04,750 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:42:04,751 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:42:04,751 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:42:23,132 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:42:23,132 - INFO - 正在获取用户个人资料...
+2025-05-03 16:42:23,133 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:42:23,311 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:42:23,311 - INFO - 用户已登录
+2025-05-03 16:42:23,312 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:42:23,312 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:42:23,312 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:42:23,993 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:42:23,995 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:42:23,996 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:42:23,996 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:42:24,001 - INFO - Found server "FastMCP" in E:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp\dida_mcp_server.py
+2025-05-03 16:42:24,003 - INFO - Starting server "FastMCP"...
+2025-05-03 16:42:24,010 - DEBUG - Using proactor: IocpProactor
+2025-05-03 16:42:24,023 - DEBUG - Received message: root=InitializedNotification(method='notifications/initialized', params=None, jsonrpc='2.0')
+2025-05-03 16:45:59,798 - INFO - 正在初始化用户对象 (User object)...
+2025-05-03 16:45:59,798 - INFO - 正在获取用户个人资料...
+2025-05-03 16:45:59,800 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:45:59,975 - DEBUG - https://api.dida365.com:443 "GET /api/v2/user/profile HTTP/1.1" 200 None
+2025-05-03 16:45:59,976 - INFO - 用户已登录
+2025-05-03 16:45:59,976 - INFO - 用户个人资料加载成功: liuzexi200709@126.com
+2025-05-03 16:45:59,976 - INFO - 正在获取初始数据 (任务、项目、标签)...
+2025-05-03 16:45:59,977 - DEBUG - Starting new HTTPS connection (1): api.dida365.com:443
+2025-05-03 16:46:00,174 - DEBUG - https://api.dida365.com:443 "GET /api/v2/batch/check/0 HTTP/1.1" 200 None
+2025-05-03 16:46:00,175 - INFO - 初始数据加载成功: 55 个任务, 3 个项目, 1 个标签。
+2025-05-03 16:46:00,177 - DEBUG - Initializing server 'FastMCP'
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for ListToolsRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for CallToolRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for ListResourcesRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for ReadResourceRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for PromptListRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for GetPromptRequest
+2025-05-03 16:46:00,177 - DEBUG - Registering handler for ListResourceTemplatesRequest
+2025-05-03 16:46:00,192 - INFO - Starting server "FastMCP"...
+2025-05-03 16:46:00,204 - DEBUG - Using proactor: IocpProactor
