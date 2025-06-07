@@ -1471,6 +1471,346 @@ def get_task_statistics() -> Dict[str, Any]:
         logger.error(f"获取任务统计失败: {e}")
         return {"error": str(e)}
 
+# ========== 任务移动功能 ==========
+
+@mcp.tool()
+def move_task_to_project(task_id: str, from_project_id: str, to_project_id: str) -> str:
+    """移动单个任务到其他项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 验证任务是否存在
+        task = user.find_task_by_id(task_id)
+        if not task:
+            return f"未找到ID为{task_id}的任务"
+        
+        # 验证源项目ID是否匹配
+        if task.projectId != from_project_id:
+            return f"任务'{task.title}'当前不在指定的源项目中（当前项目ID: {task.projectId}）"
+        
+        # 验证目标项目是否存在
+        target_project = user.find_project_by_id(to_project_id)
+        if not target_project:
+            return f"未找到目标项目ID: {to_project_id}"
+        
+        # 获取源项目名称用于显示
+        source_project_name = "未知项目"
+        source_project = user.find_project_by_id(from_project_id)
+        if source_project:
+            source_project_name = source_project.name
+        
+        # 执行移动操作
+        result = user.move_task_to_project(task_id, from_project_id, to_project_id)
+        
+        if result:
+            return f"任务'{task.title}'已成功从项目'{source_project_name}'移动到项目'{target_project.name}'"
+        else:
+            return f"移动任务'{task.title}'失败"
+    except Exception as e:
+        logger.error(f"移动任务失败: {e}")
+        return f"移动任务失败: {str(e)}"
+
+@mcp.tool()
+def move_task_to_project_by_name(task_id: str, from_project_name: str, to_project_name: str) -> str:
+    """通过项目名称移动单个任务到其他项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 验证任务是否存在
+        task = user.find_task_by_id(task_id)
+        if not task:
+            return f"未找到ID为{task_id}的任务"
+        
+        # 查找源项目
+        source_project = user.find_project_by_name(from_project_name)
+        if not source_project:
+            return f"未找到源项目: {from_project_name}"
+        
+        # 查找目标项目
+        target_project = user.find_project_by_name(to_project_name)
+        if not target_project:
+            return f"未找到目标项目: {to_project_name}"
+        
+        # 验证任务是否在源项目中
+        if task.projectId != source_project.id:
+            return f"任务'{task.title}'当前不在项目'{from_project_name}'中"
+        
+        # 执行移动操作
+        result = user.move_task_to_project(task_id, source_project.id, target_project.id)
+        
+        if result:
+            return f"任务'{task.title}'已成功从项目'{from_project_name}'移动到项目'{to_project_name}'"
+        else:
+            return f"移动任务'{task.title}'失败"
+    except Exception as e:
+        logger.error(f"移动任务失败: {e}")
+        return f"移动任务失败: {str(e)}"
+
+@mcp.tool()
+def move_multiple_tasks_to_project(task_moves: List[Dict[str, str]]) -> str:
+    """批量移动多个任务到其他项目
+    
+    参数格式: [{"taskId": "xxx", "fromProjectId": "xxx", "toProjectId": "xxx"}, ...]
+    """
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        if not task_moves or not isinstance(task_moves, list):
+            return "请提供有效的任务移动列表"
+        
+        # 验证每个移动请求
+        validated_moves = []
+        for move in task_moves:
+            if not isinstance(move, dict):
+                return "任务移动项必须是字典格式"
+            
+            task_id = move.get("taskId")
+            from_project_id = move.get("fromProjectId")
+            to_project_id = move.get("toProjectId")
+            
+            if not all([task_id, from_project_id, to_project_id]):
+                return "每个移动项必须包含 taskId, fromProjectId, toProjectId"
+            
+            # 验证任务存在
+            task = user.find_task_by_id(task_id)
+            if not task:
+                return f"未找到任务ID: {task_id}"
+            
+            # 验证任务在源项目中
+            if task.projectId != from_project_id:
+                return f"任务'{task.title}'不在指定的源项目中"
+            
+            # 验证目标项目存在
+            target_project = user.find_project_by_id(to_project_id)
+            if not target_project:
+                return f"未找到目标项目ID: {to_project_id}"
+            
+            validated_moves.append(move)
+        
+        # 执行批量移动
+        result = user.move_tasks_to_project(validated_moves)
+        
+        if result:
+            return f"成功批量移动 {len(validated_moves)} 个任务"
+        else:
+            return "批量移动任务失败"
+    except Exception as e:
+        logger.error(f"批量移动任务失败: {e}")
+        return f"批量移动任务失败: {str(e)}"
+
+@mcp.tool()
+def move_all_tasks_from_project(from_project_id: str, to_project_id: str) -> str:
+    """将一个项目中的所有任务移动到另一个项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 验证源项目和目标项目存在
+        source_project = user.find_project_by_id(from_project_id)
+        if not source_project:
+            return f"未找到源项目ID: {from_project_id}"
+        
+        target_project = user.find_project_by_id(to_project_id)
+        if not target_project:
+            return f"未找到目标项目ID: {to_project_id}"
+        
+        # 获取源项目中的所有任务
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        source_tasks = [task for task in all_tasks if task.get('projectId') == from_project_id]
+        
+        if not source_tasks:
+            return f"项目'{source_project.name}'中没有任务需要移动"
+        
+        # 构建移动列表
+        task_moves = []
+        for task in source_tasks:
+            task_moves.append({
+                "taskId": task['id'],
+                "fromProjectId": from_project_id,
+                "toProjectId": to_project_id
+            })
+        
+        # 执行批量移动
+        result = user.move_tasks_to_project(task_moves)
+        
+        if result:
+            return f"成功将 {len(source_tasks)} 个任务从项目'{source_project.name}'移动到项目'{target_project.name}'"
+        else:
+            return f"移动项目'{source_project.name}'中的任务失败"
+    except Exception as e:
+        logger.error(f"移动项目任务失败: {e}")
+        return f"移动项目任务失败: {str(e)}"
+
+@mcp.tool()
+def move_all_tasks_from_project_by_name(from_project_name: str, to_project_name: str) -> str:
+    """通过项目名称将一个项目中的所有任务移动到另一个项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 查找源项目和目标项目
+        source_project = user.find_project_by_name(from_project_name)
+        if not source_project:
+            return f"未找到源项目: {from_project_name}"
+        
+        target_project = user.find_project_by_name(to_project_name)
+        if not target_project:
+            return f"未找到目标项目: {to_project_name}"
+        
+        # 调用按ID移动的方法
+        return move_all_tasks_from_project(source_project.id, target_project.id)
+    except Exception as e:
+        logger.error(f"移动项目任务失败: {e}")
+        return f"移动项目任务失败: {str(e)}"
+
+@mcp.tool()
+def move_tasks_by_tag_to_project(tag_name: str, to_project_id: str) -> str:
+    """将包含指定标签的所有任务移动到指定项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 验证目标项目存在
+        target_project = user.find_project_by_id(to_project_id)
+        if not target_project:
+            return f"未找到目标项目ID: {to_project_id}"
+        
+        # 验证标签存在
+        tag = user.find_tag_by_name(tag_name)
+        if not tag:
+            return f"未找到标签: {tag_name}"
+        
+        # 获取包含指定标签的所有任务
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        tagged_tasks = []
+        for task in all_tasks:
+            task_tags = task.get('tags', [])
+            if tag_name in task_tags:
+                tagged_tasks.append(task)
+        
+        if not tagged_tasks:
+            return f"没有找到包含标签'{tag_name}'的任务"
+        
+        # 构建移动列表
+        task_moves = []
+        for task in tagged_tasks:
+            current_project_id = task.get('projectId')
+            if current_project_id and current_project_id != to_project_id:
+                task_moves.append({
+                    "taskId": task['id'],
+                    "fromProjectId": current_project_id,
+                    "toProjectId": to_project_id
+                })
+        
+        if not task_moves:
+            return f"所有包含标签'{tag_name}'的任务都已在目标项目'{target_project.name}'中"
+        
+        # 执行批量移动
+        result = user.move_tasks_to_project(task_moves)
+        
+        if result:
+            return f"成功将 {len(task_moves)} 个包含标签'{tag_name}'的任务移动到项目'{target_project.name}'"
+        else:
+            return f"移动包含标签'{tag_name}'的任务失败"
+    except Exception as e:
+        logger.error(f"按标签移动任务失败: {e}")
+        return f"按标签移动任务失败: {str(e)}"
+
+@mcp.tool()
+def move_tasks_by_tag_to_project_by_name(tag_name: str, to_project_name: str) -> str:
+    """通过项目名称将包含指定标签的所有任务移动到指定项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 查找目标项目
+        target_project = user.find_project_by_name(to_project_name)
+        if not target_project:
+            return f"未找到目标项目: {to_project_name}"
+        
+        # 调用按ID移动的方法
+        return move_tasks_by_tag_to_project(tag_name, target_project.id)
+    except Exception as e:
+        logger.error(f"按标签移动任务失败: {e}")
+        return f"按标签移动任务失败: {str(e)}"
+
+@mcp.tool()
+def get_task_move_preview(task_id: str, to_project_id: str) -> Dict[str, Any]:
+    """预览任务移动操作（不实际执行移动）"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return {"error": "请先设置token"}
+        
+        # 验证任务存在
+        task = user.find_task_by_id(task_id)
+        if not task:
+            return {"error": f"未找到ID为{task_id}的任务"}
+        
+        # 获取当前项目信息
+        current_project_name = "未知项目"
+        current_project = user.find_project_by_id(task.projectId)
+        if current_project:
+            current_project_name = current_project.name
+        
+        # 验证目标项目存在
+        target_project = user.find_project_by_id(to_project_id)
+        if not target_project:
+            return {"error": f"未找到目标项目ID: {to_project_id}"}
+        
+        # 检查是否需要移动
+        if task.projectId == to_project_id:
+            return {
+                "需要移动": False,
+                "原因": "任务已在目标项目中",
+                "任务信息": {
+                    "ID": task.id,
+                    "标题": task.title,
+                    "当前项目": current_project_name,
+                    "目标项目": target_project.name
+                }
+            }
+        
+        return {
+            "需要移动": True,
+            "任务信息": {
+                "ID": task.id,
+                "标题": task.title,
+                "内容": task.content or "无",
+                "状态": {0: "未完成", 1: "已完成", 2: "已归档"}.get(task.status, "未知"),
+                "优先级": task.priority or 0,
+                "标签": task.tags or [],
+                "当前项目": {
+                    "ID": task.projectId,
+                    "名称": current_project_name
+                },
+                "目标项目": {
+                    "ID": to_project_id,
+                    "名称": target_project.name
+                }
+            },
+            "移动操作": {
+                "taskId": task_id,
+                "fromProjectId": task.projectId,
+                "toProjectId": to_project_id
+            }
+        }
+    except Exception as e:
+        logger.error(f"预览任务移动失败: {e}")
+        return {"error": str(e)}
+
 # 资源定义
 @mcp.resource("dida365://user")
 def get_user_resource() -> str:
