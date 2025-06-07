@@ -481,7 +481,385 @@ class User:
             return None
         self.get_info_about()
         return True
+
+    # ========== 项目管理方法 ==========
+    def add_project(self, project):
+        """创建单个项目"""
+        if project is None:
+            return False
+        project_data = project.to_dict()
+        url = "https://api.dida365.com/api/v2/project"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=project_data)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def remove_project(self, project_id):
+        """删除项目"""
+        if project_id is None:
+            return False
+        payload = {
+            "add": [],
+            "update": [],
+            "delete": [project_id]
+        }
+        url = "https://api.dida365.com/api/v2/batch/project"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def modify_project(self, project):
+        """修改项目"""
+        if project is None:
+            return False
+        project_data = project.to_dict()
+        payload = {
+            "add": [],
+            "update": [project_data],
+            "delete": []
+        }
+        url = "https://api.dida365.com/api/v2/batch/project"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def find_project_by_id(self, id):
+        """根据ID查找项目"""
+        for i in self.projects:
+            if i.id == id:
+                return i
+        return None
+
+    def find_project_by_name(self, name):
+        """根据名称查找项目"""
+        for i in self.projects:
+            if i.name == name:
+                return i
+        return None
+
+    # ========== 标签管理方法 ==========
+    def add_tag(self, tag):
+        """创建标签"""
+        if tag is None:
+            return False
+        tag_data = tag.to_dict()
+        payload = {
+            "add": [tag_data],
+            "update": []
+        }
+        url = "https://api.dida365.com/api/v2/batch/tag"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def modify_tag(self, tag):
+        """修改标签"""
+        if tag is None:
+            return False
+        tag_data = tag.to_dict()
+        payload = {
+            "add": [],
+            "update": [tag_data]
+        }
+        url = "https://api.dida365.com/api/v2/batch/tag"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def remove_tag(self, tag_name):
+        """删除标签"""
+        if tag_name is None:
+            return False
+        payload = {
+            "name": tag_name
+        }
+        url = "https://api.dida365.com/api/v2/tag/delete"
+        try:
+            response = requests.request("DELETE", url, headers=self.headers, json=payload)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"请求失败: {e}")
+            if 'response' in locals():
+                if response is not None:
+                    logging.error(f"响应状态码: {response.status_code}")
+                    logging.error(f"响应内容: {response.text}")
+                else:
+                    logging.error("响应对象为None")
+            else:
+                logging.error("未获取到响应对象")
+            return None
+        self.get_info_about()
+        return True
+
+    def find_tag_by_name(self, name):
+        """根据名称查找标签"""
+        for i in self.tags:
+            if i.name == name:
+                return i
+        return None
+
+    def move_task_to_project(self, task_id, from_project_id, to_project_id):
+        """移动任务到其他项目"""
+        if not task_id or not from_project_id or not to_project_id:
+            logging.error("移动任务参数不完整")
+            return False
             
+        payload = [{
+            "taskId": task_id,
+            "fromProjectId": from_project_id,
+            "toProjectId": to_project_id
+        }]
+        
+        url = "https://api.dida365.com/api/v2/batch/taskProject"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+            if response.status_code == 200:
+                logging.info(f"成功移动任务 {task_id} 从项目 {from_project_id} 到项目 {to_project_id}")
+                self.get_info_about()  # 刷新数据
+                return True
+            else:
+                logging.error(f"移动任务失败，状态码: {response.status_code}, 响应: {response.text}")
+                return False
+        except requests.exceptions.RequestException as e:
+            logging.error(f"移动任务请求失败: {e}")
+            return False
+
+    def move_tasks_to_project(self, task_moves):
+        """批量移动任务到其他项目
+        
+        Args:
+            task_moves: 任务移动列表，格式为:
+                [{"taskId": "xxx", "fromProjectId": "xxx", "toProjectId": "xxx"}, ...]
+        """
+        if not task_moves or not isinstance(task_moves, list):
+            logging.error("批量移动任务参数错误")
+            return False
+            
+        url = "https://api.dida365.com/api/v2/batch/taskProject"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=task_moves)
+            if response.status_code == 200:
+                logging.info(f"成功批量移动 {len(task_moves)} 个任务")
+                self.get_info_about()  # 刷新数据
+                return True
+            else:
+                logging.error(f"批量移动任务失败，状态码: {response.status_code}, 响应: {response.text}")
+                return False
+        except requests.exceptions.RequestException as e:
+            logging.error(f"批量移动任务请求失败: {e}")
+            return False
+
+    def batch_update_tasks(self, add_tasks=None, update_tasks=None, delete_tasks=None, 
+                          add_attachments=None, update_attachments=None, delete_attachments=None):
+        """批量更新任务
+        
+        Args:
+            add_tasks: 要添加的任务列表
+            update_tasks: 要更新的任务列表
+            delete_tasks: 要删除的任务列表
+            add_attachments: 要添加的附件列表
+            update_attachments: 要更新的附件列表
+            delete_attachments: 要删除的附件列表
+        """
+        payload = {
+            "add": add_tasks or [],
+            "update": update_tasks or [],
+            "delete": delete_tasks or [],
+            "addAttachments": add_attachments or [],
+            "updateAttachments": update_attachments or [],
+            "deleteAttachments": delete_attachments or []
+        }
+        
+        url = "https://api.dida365.com/api/v2/batch/task"
+        try:
+            response = requests.request("POST", url, headers=self.headers, json=payload)
+            if response.status_code == 200:
+                logging.info("批量更新任务成功")
+                self.get_info_about()  # 刷新数据
+                return True
+            else:
+                logging.error(f"批量更新任务失败，状态码: {response.status_code}, 响应: {response.text}")
+                return False
+        except requests.exceptions.RequestException as e:
+            logging.error(f"批量更新任务请求失败: {e}")
+            return False
+
+    def update_task_with_checklist(self, task_id, title=None, project_id=None, status=None, 
+                                  start_date=None, tags=None, checklist_items=None, **kwargs):
+        """更新带有清单的任务
+        
+        Args:
+            task_id: 任务ID
+            title: 任务标题
+            project_id: 项目ID
+            status: 任务状态 (0=未完成, 1=已完成)
+            start_date: 开始时间
+            tags: 标签列表
+            checklist_items: 清单项目列表，格式为 [{"id": "xxx", "status": 0, "title": "xxx", "sortOrder": 0}, ...]
+            **kwargs: 其他任务属性
+        """
+        # 查找现有任务
+        existing_task = self.find_task_by_id(task_id)
+        if not existing_task:
+            logging.error(f"未找到任务 {task_id}")
+            return False
+            
+        # 构建更新数据
+        task_data = existing_task.to_dict()
+        
+        # 更新指定字段
+        if title is not None:
+            task_data['title'] = title
+        if project_id is not None:
+            task_data['projectId'] = project_id
+        if status is not None:
+            task_data['status'] = status
+        if start_date is not None:
+            task_data['startDate'] = start_date
+        if tags is not None:
+            task_data['tags'] = tags
+        if checklist_items is not None:
+            task_data['items'] = checklist_items
+            
+        # 更新其他属性
+        for key, value in kwargs.items():
+            if value is not None:
+                task_data[key] = value
+                
+        return self.batch_update_tasks(update_tasks=[task_data])
+            
+
+class ProjectBuilder:
+    def __init__(self, name: str):
+        self._data = {
+            'name': name,
+            'inAll': True,
+            'muted': False,
+            'isOwner': True,
+            'kind': 'TASK',
+            'viewMode': 'list',
+            'openToTeam': False
+        }
+    
+    def color(self, color_code: str):
+        """设置项目颜色"""
+        self._data['color'] = color_code
+        return self
+        
+    def group(self, group_id: str):
+        """设置项目分组"""
+        if group_id:
+            self._data['groupId'] = group_id
+        return self
+        
+    def sort_order(self, order: int):
+        """设置排序顺序"""
+        self._data['sortOrder'] = order
+        return self
+        
+    def team(self, team_id: str):
+        """设置团队ID"""
+        if team_id:
+            self._data['teamId'] = team_id
+        return self
+        
+    def view_mode(self, mode: str):
+        """设置视图模式 (list/kanban)"""
+        self._data['viewMode'] = mode
+        return self
+        
+    def build(self):
+        return Project(self._data)
+
+class TagBuilder:
+    def __init__(self, name: str):
+        self._data = {
+            'name': name,
+            'label': name,
+            'sortType': 'project'
+        }
+    
+    def color(self, color_code: str):
+        """设置标签颜色"""
+        self._data['color'] = color_code
+        return self
+        
+    def sort_order(self, order: int):
+        """设置排序顺序"""
+        self._data['sortOrder'] = order
+        return self
+        
+    def parent(self, parent_tag: str):
+        """设置父标签"""
+        if parent_tag:
+            self._data['parent'] = parent_tag
+        return self
+        
+    def sort_type(self, sort_type: str):
+        """设置排序类型"""
+        self._data['sortType'] = sort_type
+        return self
+        
+    def build(self):
+        return Tag(self._data)
 
 class TaskBuilder:
     def __init__(self, title: str):
@@ -566,11 +944,72 @@ class TaskBuilder:
         return delta
 
 if __name__ == '__main__':
+    # 从key.json文件读取token
+    try:
+        with open('key.json', 'r', encoding='utf-8') as f:
+            key_data = json.load(f)
+            token = key_data.get('token', '')
+    except FileNotFoundError:
+        logging.error("key.json文件不存在，请创建该文件并添加token")
+        print("错误：key.json文件不存在")
+        print("请创建key.json文件，格式如下：")
+        print('{"token": "your_token_here"}')
+        exit(1)
+    except json.JSONDecodeError:
+        logging.error("key.json文件格式错误")
+        print("错误：key.json文件格式错误，请检查JSON格式")
+        exit(1)
+    except Exception as e:
+        logging.error(f"读取key.json文件时发生错误: {e}")
+        print(f"错误：读取key.json文件时发生错误: {e}")
+        exit(1)
+    
+    if not token:
+        logging.error("token为空，请在key.json中设置有效的token")
+        print("错误：token为空，请在key.json中设置有效的token")
+        exit(1)
+    
     onecreeper = User()
-    onecreeper.update_token(f'oai=48F39478D2BAEF3EDAF275DFC0290DEBC1BB8A442B5AB9B2EA065A42E8FE5D244D3F9B7BF482069A1E5E292B5DB005AC9740EB8915E8134161528B72129784D7741D8DE1B70D55264D029A99D56C262FE092895D6BFDD2B003552D410F41A05ED3056E5F14F482701E13238CD2F459BA8D075374026E5E2BC86E5290EE534A8BD420B1FC222EC424D78F8DF25C0B3971CC7400CB2CC8C1DD9B2C16BF6B69C5F6; t=73AE2E6CC13DD9679B108734F08D5DDCDE2D4DB2C9321F66977A01F458D7BB67C01F9B4514585EACB7569442426196A4401595BE1E94744DA788BABBD5E67DC4325615680C54FD42CE398C6B730FA600C50FAD376CA9C4981CFA075647187468385AA04082B6E13207380EE6E17F65D78B498442A0F01A224A27CA3201467CF3EFB0107AE6CEBEDF1056D5B8CC2FBEECC8BAF774BEA14875A9AEAD1B0C41CF9F4C4FFBD3D1FB387E; AWSALB=vySUZoltIOX+iVR6i61YEliTkGbzIzVNTDepUb0uD6PnAcd8RgSJO75N76U0FONo/W6Zdv/9JwnAP8k5nUYjXBUK2sXk5VNgilLH0dB5F+RkFJJekbfAraau4sRh; AWSALBCORS=vySUZoltIOX+iVR6i61YEliTkGbzIzVNTDepUb0uD6PnAcd8RgSJO75N76U0FONo/W6Zdv/9JwnAP8k5nUYjXBUK2sXk5VNgilLH0dB5F+RkFJJekbfAraau4sRh')
+    onecreeper.update_token(token)
     onecreeper.get_info_about()
     
-    # 使用TaskBuilder示例
+    # ========== 使用ProjectBuilder示例 ==========
+    # 创建一个工作项目
+    project1 = (ProjectBuilder("工作项目")
+                .color("#FF6B6B")
+                .sort_order(-1100048498688)
+                .view_mode("list")
+                .build())
+    
+    # 创建一个个人项目
+    project2 = (ProjectBuilder("个人学习")
+                .color("#4ECDC4")
+                .sort_order(-1100048498687)
+                .view_mode("kanban")
+                .build())
+    
+    # 添加项目
+    onecreeper.add_project(project1)
+    onecreeper.add_project(project2)
+    
+    # ========== 使用TagBuilder示例 ==========
+    # 创建重要标签
+    tag1 = (TagBuilder("重要")
+            .color("#FFD966")
+            .sort_order(-3298534883328)
+            .build())
+    
+    # 创建紧急标签
+    tag2 = (TagBuilder("紧急")
+            .color("#FF6B6B")
+            .sort_order(-3298534883327)
+            .build())
+    
+    # 添加标签
+    onecreeper.add_tag(tag1)
+    onecreeper.add_tag(tag2)
+    
+    # ========== 使用TaskBuilder示例 ==========
     # 普通任务(无开始时间)
     task1 = (TaskBuilder("普通任务")
             .content("这是一个普通任务")
@@ -582,7 +1021,104 @@ if __name__ == '__main__':
             .project("6778eeb7c71c710000000114")
             .due("2025-05-05 15:00")
             .priority(4)
+            .tag("重要", "紧急")
             .build())
     
     onecreeper.add_task(task1)
     onecreeper.add_task(task2)
+    
+    # ========== 演示修改和删除功能 ==========
+    # 查找并修改项目
+    work_project = onecreeper.find_project_by_name("工作项目")
+    if work_project:
+        work_project.name = "工作项目-已修改"
+        work_project.color = "#35D870"
+        onecreeper.modify_project(work_project)
+    
+    # 查找并修改标签
+    important_tag = onecreeper.find_tag_by_name("重要")
+    if important_tag:
+        important_tag.name = "超级重要"
+        important_tag.label = "超级重要"
+        important_tag.color = "#35D870"
+        onecreeper.modify_tag(important_tag)
+    
+    # 演示删除功能（注释掉以避免实际删除）
+    # onecreeper.remove_tag("紧急")
+    # onecreeper.remove_project("project_id_here")
+    
+    # ========== 演示新增的任务移动和批量更新功能 ==========
+    
+    # 1. 移动单个任务到其他项目
+    # onecreeper.move_task_to_project(
+    #     task_id="683d6744aaf2610c051c4777",
+    #     from_project_id="6844119ee4b0a70695e768d8",
+    #     to_project_id="inbox1015881707"
+    # )
+    
+    # 2. 批量移动任务到其他项目
+    # task_moves = [
+    #     {
+    #         "taskId": "683d6744aaf2610c051c4777",
+    #         "fromProjectId": "6844119ee4b0a70695e768d8",
+    #         "toProjectId": "inbox1015881707"
+    #     }
+    # ]
+    # onecreeper.move_tasks_to_project(task_moves)
+    
+    # 3. 批量更新任务（基于您提供的curl命令）
+    # update_task_data = {
+    #     "items": [{"id": "68441258aaf2613ac64db9f1", "status": 0, "title": "c", "sortOrder": 0}],
+    #     "reminders": [],
+    #     "exDate": [],
+    #     "dueDate": None,
+    #     "priority": 0,
+    #     "isAllDay": True,
+    #     "parentId": None,
+    #     "repeatFlag": "",
+    #     "progress": 0,
+    #     "assignee": None,
+    #     "sortOrder": -1099511627776,
+    #     "startDate": "2025-07-01T16:00:00.000+0000",
+    #     "isFloating": False,
+    #     "desc": "",
+    #     "status": 0,
+    #     "projectId": "684411a0e4b091327a199572",
+    #     "kind": "CHECKLIST",
+    #     "etag": "qn793ixh",
+    #     "createdTime": "2025-06-02T08:56:36.000+0000",
+    #     "modifiedTime": "2025-06-07T10:21:24.000+0000",
+    #     "title": "表盘",
+    #     "tags": ["提上日程"],
+    #     "timeZone": "Asia/Hong_Kong",
+    #     "content": "",
+    #     "id": "683d6744aaf2610c051c4777"
+    # }
+    # onecreeper.batch_update_tasks(update_tasks=[update_task_data])
+    
+    # 4. 更新带有清单的任务
+    # checklist_items = [
+    #     {"id": "68441258aaf2613ac64db9f1", "status": 0, "title": "c", "sortOrder": 0}
+    # ]
+    # onecreeper.update_task_with_checklist(
+    #     task_id="683d6744aaf2610c051c4777",
+    #     title="表盘",
+    #     project_id="684411a0e4b091327a199572",
+    #     status=0,
+    #     start_date="2025-07-01T16:00:00.000+0000",
+    #     tags=["提上日程"],
+    #     checklist_items=checklist_items,
+    #     kind="CHECKLIST",
+    #     priority=0,
+    #     isAllDay=True,
+    #     timeZone="Asia/Hong_Kong"
+    # )
+    
+    print("API功能演示完成！")
+    print("新增功能包括：")
+    print("1. 项目管理：创建、修改、删除项目")
+    print("2. 标签管理：创建、修改、删除标签")
+    print("3. ProjectBuilder和TagBuilder构建器")
+    print("4. 查找功能：按名称/ID查找项目和标签")
+    print("5. 任务移动：move_task_to_project() 和 move_tasks_to_project()")
+    print("6. 批量更新：batch_update_tasks() 和 update_task_with_checklist()")

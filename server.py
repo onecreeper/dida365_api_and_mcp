@@ -834,6 +834,643 @@ def get_pending_tasks() -> List[Dict[str, Any]]:
         logger.error(f"获取待完成任务失败: {e}")
         return [{"error": str(e)}]
 
+# ========== 项目管理工具 ==========
+
+@mcp.tool()
+def create_project(
+    name: str,
+    color: str = "",
+    group_id: str = "",
+    sort_order: int = 0,
+    view_mode: str = "list",
+    team_id: str = ""
+) -> str:
+    """创建新项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 使用ProjectBuilder创建项目
+        builder = api.ProjectBuilder(name)
+        
+        if color:
+            builder.color(color)
+        if group_id:
+            builder.group(group_id)
+        if sort_order != 0:
+            builder.sort_order(sort_order)
+        if view_mode:
+            builder.view_mode(view_mode)
+        if team_id:
+            builder.team(team_id)
+        
+        project = builder.build()
+        result = user.add_project(project)
+        
+        if result:
+            return f"项目'{name}'创建成功"
+        else:
+            return f"项目'{name}'创建失败"
+    except Exception as e:
+        logger.error(f"创建项目失败: {e}")
+        return f"创建项目失败: {str(e)}"
+
+@mcp.tool()
+def delete_project_by_id(project_id: str) -> str:
+    """根据ID删除项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 先获取项目信息用于显示
+        project = user.find_project_by_id(project_id)
+        project_name = project.name if project else f"ID为{project_id}的项目"
+        
+        result = user.remove_project(project_id)
+        if result:
+            return f"项目'{project_name}'删除成功"
+        else:
+            return f"项目'{project_name}'删除失败"
+    except Exception as e:
+        logger.error(f"删除项目失败: {e}")
+        return f"删除项目失败: {str(e)}"
+
+@mcp.tool()
+def delete_project_by_name(name: str) -> str:
+    """根据名称删除项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        project = user.find_project_by_name(name)
+        if not project:
+            return f"未找到名称为'{name}'的项目"
+        
+        result = user.remove_project(project.id)
+        if result:
+            return f"项目'{name}'删除成功"
+        else:
+            return f"项目'{name}'删除失败"
+    except Exception as e:
+        logger.error(f"删除项目失败: {e}")
+        return f"删除项目失败: {str(e)}"
+
+@mcp.tool()
+def update_project_name(project_id: str, new_name: str) -> str:
+    """修改项目名称"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        project = user.find_project_by_id(project_id)
+        if not project:
+            return f"未找到ID为{project_id}的项目"
+        
+        old_name = project.name
+        project.name = new_name
+        result = user.modify_project(project)
+        
+        if result:
+            return f"项目名称从'{old_name}'更新为'{new_name}'"
+        else:
+            return f"项目名称更新失败"
+    except Exception as e:
+        logger.error(f"更新项目名称失败: {e}")
+        return f"更新项目名称失败: {str(e)}"
+
+@mcp.tool()
+def update_project_color(project_id: str, color: str) -> str:
+    """修改项目颜色"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        project = user.find_project_by_id(project_id)
+        if not project:
+            return f"未找到ID为{project_id}的项目"
+        
+        project.color = color
+        result = user.modify_project(project)
+        
+        if result:
+            return f"项目'{project.name}'颜色已更新为'{color}'"
+        else:
+            return f"项目'{project.name}'颜色更新失败"
+    except Exception as e:
+        logger.error(f"更新项目颜色失败: {e}")
+        return f"更新项目颜色失败: {str(e)}"
+
+@mcp.tool()
+def update_project_view_mode(project_id: str, view_mode: str) -> str:
+    """修改项目视图模式 (list/kanban)"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        if view_mode not in ["list", "kanban"]:
+            return "视图模式只能是 'list' 或 'kanban'"
+        
+        project = user.find_project_by_id(project_id)
+        if not project:
+            return f"未找到ID为{project_id}的项目"
+        
+        project.viewMode = view_mode
+        result = user.modify_project(project)
+        
+        if result:
+            return f"项目'{project.name}'视图模式已更新为'{view_mode}'"
+        else:
+            return f"项目'{project.name}'视图模式更新失败"
+    except Exception as e:
+        logger.error(f"更新项目视图模式失败: {e}")
+        return f"更新项目视图模式失败: {str(e)}"
+
+@mcp.tool()
+def update_advanced_project(
+    project_id: str,
+    name: str = "",
+    color: str = "",
+    view_mode: str = "",
+    sort_order: int = -1,
+    group_id: str = "",
+    team_id: str = ""
+) -> str:
+    """高级项目修改功能（支持修改多个属性）"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        project = user.find_project_by_id(project_id)
+        if not project:
+            return f"未找到ID为{project_id}的项目"
+        
+        changes = []
+        
+        # 更新名称
+        if name:
+            old_name = project.name
+            project.name = name
+            changes.append(f"名称: '{old_name}' → '{name}'")
+        
+        # 更新颜色
+        if color:
+            project.color = color
+            changes.append(f"颜色: {color}")
+        
+        # 更新视图模式
+        if view_mode:
+            if view_mode in ["list", "kanban"]:
+                project.viewMode = view_mode
+                changes.append(f"视图模式: {view_mode}")
+            else:
+                return "视图模式只能是 'list' 或 'kanban'"
+        
+        # 更新排序顺序
+        if sort_order >= 0:
+            project.sortOrder = sort_order
+            changes.append(f"排序顺序: {sort_order}")
+        
+        # 更新分组ID
+        if group_id:
+            project.groupId = group_id
+            changes.append(f"分组ID: {group_id}")
+        
+        # 更新团队ID
+        if team_id:
+            project.teamId = team_id
+            changes.append(f"团队ID: {team_id}")
+        
+        if not changes:
+            return "没有提供任何要修改的内容"
+        
+        result = user.modify_project(project)
+        
+        if result:
+            changes_text = "、".join(changes)
+            return f"项目'{project.name}'修改成功，更新内容: {changes_text}"
+        else:
+            return f"项目'{project.name}'修改失败"
+    except Exception as e:
+        logger.error(f"高级修改项目失败: {e}")
+        return f"高级修改项目失败: {str(e)}"
+
+@mcp.tool()
+def find_project_by_name(name: str) -> Optional[Dict[str, Any]]:
+    """根据名称查找项目"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return {"error": "请先设置token"}
+        
+        user.get_info_about()  # 刷新数据
+        project = user.find_project_by_name(name)
+        if project:
+            return project.to_dict()
+        else:
+            return {"error": f"未找到名称为'{name}'的项目"}
+    except Exception as e:
+        logger.error(f"查找项目失败: {e}")
+        return {"error": str(e)}
+
+# ========== 标签管理工具 ==========
+
+@mcp.tool()
+def create_tag(
+    name: str,
+    color: str = "",
+    sort_order: int = 0,
+    parent: str = "",
+    sort_type: str = "project"
+) -> str:
+    """创建新标签"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 使用TagBuilder创建标签
+        builder = api.TagBuilder(name)
+        
+        if color:
+            builder.color(color)
+        if sort_order != 0:
+            builder.sort_order(sort_order)
+        if parent:
+            builder.parent(parent)
+        if sort_type:
+            builder.sort_type(sort_type)
+        
+        tag = builder.build()
+        result = user.add_tag(tag)
+        
+        if result:
+            return f"标签'{name}'创建成功"
+        else:
+            return f"标签'{name}'创建失败"
+    except Exception as e:
+        logger.error(f"创建标签失败: {e}")
+        return f"创建标签失败: {str(e)}"
+
+@mcp.tool()
+def delete_tag_by_name(name: str) -> str:
+    """根据名称删除标签"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        # 先检查标签是否存在
+        tag = user.find_tag_by_name(name)
+        if not tag:
+            return f"未找到名称为'{name}'的标签"
+        
+        result = user.remove_tag(name)
+        if result:
+            return f"标签'{name}'删除成功"
+        else:
+            return f"标签'{name}'删除失败"
+    except Exception as e:
+        logger.error(f"删除标签失败: {e}")
+        return f"删除标签失败: {str(e)}"
+
+@mcp.tool()
+def update_tag_name(old_name: str, new_name: str) -> str:
+    """修改标签名称"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        tag = user.find_tag_by_name(old_name)
+        if not tag:
+            return f"未找到名称为'{old_name}'的标签"
+        
+        tag.name = new_name
+        tag.label = new_name
+        result = user.modify_tag(tag)
+        
+        if result:
+            return f"标签名称从'{old_name}'更新为'{new_name}'"
+        else:
+            return f"标签名称更新失败"
+    except Exception as e:
+        logger.error(f"更新标签名称失败: {e}")
+        return f"更新标签名称失败: {str(e)}"
+
+@mcp.tool()
+def update_tag_color(name: str, color: str) -> str:
+    """修改标签颜色"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        tag = user.find_tag_by_name(name)
+        if not tag:
+            return f"未找到名称为'{name}'的标签"
+        
+        tag.color = color
+        result = user.modify_tag(tag)
+        
+        if result:
+            return f"标签'{name}'颜色已更新为'{color}'"
+        else:
+            return f"标签'{name}'颜色更新失败"
+    except Exception as e:
+        logger.error(f"更新标签颜色失败: {e}")
+        return f"更新标签颜色失败: {str(e)}"
+
+@mcp.tool()
+def update_advanced_tag(
+    name: str,
+    new_name: str = "",
+    color: str = "",
+    sort_order: int = -1,
+    parent: str = "",
+    sort_type: str = ""
+) -> str:
+    """高级标签修改功能（支持修改多个属性）"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return "请先设置token"
+        
+        tag = user.find_tag_by_name(name)
+        if not tag:
+            return f"未找到名称为'{name}'的标签"
+        
+        changes = []
+        
+        # 更新名称
+        if new_name:
+            old_name = tag.name
+            tag.name = new_name
+            tag.label = new_name
+            changes.append(f"名称: '{old_name}' → '{new_name}'")
+        
+        # 更新颜色
+        if color:
+            tag.color = color
+            changes.append(f"颜色: {color}")
+        
+        # 更新排序顺序
+        if sort_order >= 0:
+            tag.sortOrder = sort_order
+            changes.append(f"排序顺序: {sort_order}")
+        
+        # 更新父标签
+        if parent:
+            tag.parent = parent
+            changes.append(f"父标签: {parent}")
+        
+        # 更新排序类型
+        if sort_type:
+            tag.sortType = sort_type
+            changes.append(f"排序类型: {sort_type}")
+        
+        if not changes:
+            return "没有提供任何要修改的内容"
+        
+        result = user.modify_tag(tag)
+        
+        if result:
+            changes_text = "、".join(changes)
+            return f"标签'{tag.name}'修改成功，更新内容: {changes_text}"
+        else:
+            return f"标签'{tag.name}'修改失败"
+    except Exception as e:
+        logger.error(f"高级修改标签失败: {e}")
+        return f"高级修改标签失败: {str(e)}"
+
+@mcp.tool()
+def find_tag_by_name(name: str) -> Optional[Dict[str, Any]]:
+    """根据名称查找标签"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return {"error": "请先设置token"}
+        
+        user.get_info_about()  # 刷新数据
+        tag = user.find_tag_by_name(name)
+        if tag:
+            return tag.to_dict()
+        else:
+            return {"error": f"未找到名称为'{name}'的标签"}
+    except Exception as e:
+        logger.error(f"查找标签失败: {e}")
+        return {"error": str(e)}
+
+@mcp.tool()
+def get_tasks_by_tag(tag_name: str) -> List[Dict[str, Any]]:
+    """获取包含指定标签的所有任务"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return [{"error": "请先设置token"}]
+        
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        
+        # 筛选包含指定标签的任务
+        tagged_tasks = []
+        for task in all_tasks:
+            task_tags = task.get('tags', [])
+            if tag_name in task_tags:
+                tagged_tasks.append(task)
+        
+        return enhance_tasks_with_names(user, tagged_tasks)
+    except Exception as e:
+        logger.error(f"获取标签任务失败: {e}")
+        return [{"error": str(e)}]
+
+@mcp.tool()
+def get_high_priority_tasks() -> List[Dict[str, Any]]:
+    """获取高优先级任务（优先级4-5）"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return [{"error": "请先设置token"}]
+        
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        
+        # 筛选高优先级任务
+        high_priority_tasks = []
+        for task in all_tasks:
+            priority = task.get('priority', 0)
+            if priority >= 4:
+                high_priority_tasks.append(task)
+        
+        return enhance_tasks_with_names(user, high_priority_tasks)
+    except Exception as e:
+        logger.error(f"获取高优先级任务失败: {e}")
+        return [{"error": str(e)}]
+
+@mcp.tool()
+def get_overdue_tasks() -> List[Dict[str, Any]]:
+    """获取已过期的任务"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return [{"error": "请先设置token"}]
+        
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        
+        from datetime import datetime
+        now = datetime.now()
+        
+        # 筛选已过期的任务
+        overdue_tasks = []
+        for task in all_tasks:
+            due_date = task.get('dueDate')
+            if due_date and task.get('status', 0) == 0:  # 未完成且有截止时间
+                try:
+                    from dateutil import parser
+                    due_datetime = parser.parse(due_date)
+                    if due_datetime < now:
+                        overdue_tasks.append(task)
+                except:
+                    continue
+        
+        return enhance_tasks_with_names(user, overdue_tasks)
+    except Exception as e:
+        logger.error(f"获取过期任务失败: {e}")
+        return [{"error": str(e)}]
+
+@mcp.tool()
+def get_today_tasks() -> List[Dict[str, Any]]:
+    """获取今天的任务（开始时间或截止时间在今天）"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return [{"error": "请先设置token"}]
+        
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        
+        from datetime import datetime, date
+        today = date.today()
+        
+        # 筛选今天的任务
+        today_tasks = []
+        for task in all_tasks:
+            start_date = task.get('startDate')
+            due_date = task.get('dueDate')
+            
+            is_today_task = False
+            
+            # 检查开始时间
+            if start_date:
+                try:
+                    from dateutil import parser
+                    start_datetime = parser.parse(start_date)
+                    if start_datetime.date() == today:
+                        is_today_task = True
+                except:
+                    pass
+            
+            # 检查截止时间
+            if due_date and not is_today_task:
+                try:
+                    from dateutil import parser
+                    due_datetime = parser.parse(due_date)
+                    if due_datetime.date() == today:
+                        is_today_task = True
+                except:
+                    pass
+            
+            if is_today_task:
+                today_tasks.append(task)
+        
+        return enhance_tasks_with_names(user, today_tasks)
+    except Exception as e:
+        logger.error(f"获取今天任务失败: {e}")
+        return [{"error": str(e)}]
+
+@mcp.tool()
+def get_task_statistics() -> Dict[str, Any]:
+    """获取任务统计信息"""
+    try:
+        user = get_user_instance()
+        if not user.token:
+            return {"error": "请先设置token"}
+        
+        user.get_info_about()  # 刷新数据
+        all_tasks = user.tool_get_task_info()
+        
+        # 统计信息
+        total_tasks = len(all_tasks)
+        completed_tasks = len([t for t in all_tasks if t.get('status') == 1])
+        pending_tasks = len([t for t in all_tasks if t.get('status') == 0])
+        archived_tasks = len([t for t in all_tasks if t.get('status') == 2])
+        
+        # 优先级统计
+        priority_stats = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        for task in all_tasks:
+            priority = task.get('priority', 0)
+            priority_stats[priority] += 1
+        
+        # 项目统计
+        project_stats = {}
+        for task in all_tasks:
+            project_id = task.get('projectId', '无项目')
+            project_name = '无项目'
+            if project_id != '无项目':
+                for project in user.projects:
+                    if project.id == project_id:
+                        project_name = project.name
+                        break
+            
+            if project_name not in project_stats:
+                project_stats[project_name] = 0
+            project_stats[project_name] += 1
+        
+        # 过期任务统计
+        from datetime import datetime
+        now = datetime.now()
+        overdue_count = 0
+        for task in all_tasks:
+            due_date = task.get('dueDate')
+            if due_date and task.get('status', 0) == 0:
+                try:
+                    from dateutil import parser
+                    due_datetime = parser.parse(due_date)
+                    if due_datetime < now:
+                        overdue_count += 1
+                except:
+                    continue
+        
+        return {
+            "总任务数": total_tasks,
+            "已完成": completed_tasks,
+            "待完成": pending_tasks,
+            "已归档": archived_tasks,
+            "过期任务": overdue_count,
+            "完成率": f"{(completed_tasks/total_tasks*100):.1f}%" if total_tasks > 0 else "0%",
+            "优先级分布": {
+                "无优先级": priority_stats[0],
+                "低优先级": priority_stats[1],
+                "中低优先级": priority_stats[2],
+                "中优先级": priority_stats[3],
+                "中高优先级": priority_stats[4],
+                "高优先级": priority_stats[5]
+            },
+            "项目分布": project_stats,
+            "项目总数": len(user.projects),
+            "标签总数": len(user.tags)
+        }
+    except Exception as e:
+        logger.error(f"获取任务统计失败: {e}")
+        return {"error": str(e)}
+
 # 资源定义
 @mcp.resource("dida365://user")
 def get_user_resource() -> str:
