@@ -15,7 +15,9 @@ cherrystudio
 --directory
 {路径}
 例如：E:\Personal Files\project\Personal Minor Projects\py - dida365_api_and_mcp
+
 run
+
 server.py
 
 
