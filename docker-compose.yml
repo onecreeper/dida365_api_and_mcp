@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  dida365-server:
+    build: .
+    container_name: dida365-mcp-server
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./key.json:/app/key.json:ro
+      - ./api.log:/app/api.log
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - dida365-network
+
+networks:
+  dida365-network:
+    driver: bridge
