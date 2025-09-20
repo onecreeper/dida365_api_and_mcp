@@ -10,6 +10,9 @@ from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount
 import contextlib
+import contextlib
+from starlette.responses import JSONResponse
+from starlette.routing import Route
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -1882,7 +1885,13 @@ def get_tags_resource() -> str:
         return f"错误: {str(e)}"
 
 
-
+# 健康检查的处理函数
+async def health_check(request):
+    return JSONResponse({"status": "ok"})
+@contextlib.asynccontextmanager
+async def lifespan(app: Starlette):
+    async with mcp.session_manager.run():
+        yield
 
 
 @contextlib.asynccontextmanager
@@ -1895,7 +1904,13 @@ async def lifespan(app: Starlette):
     async with mcp.session_manager.run():
         yield
 
-app = Starlette(lifespan=lifespan)
+app = Starlette(
+    lifespan=lifespan,
+    routes=[
+        Route("/health", health_check, methods=["GET"]),
+        Mount("/", mcp.streamable_http_app()), # MCP 服务挂载在根上
+    ]
+)
 
 app.mount("/", mcp.streamable_http_app())
 
