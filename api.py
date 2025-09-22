@@ -258,6 +258,12 @@ class User:
             return None
         
         data = json.loads(response.text)
+        
+        # 清空现有数据，避免重复添加
+        self.tags.clear()
+        self.projects.clear()
+        self.tasks.clear()
+        
         # Tag
         for i in data.get("tags",[]):
             if i != []:
