@@ -259,11 +259,19 @@ class User:
         
         data = json.loads(response.text)
         
+<<<<<<< HEAD
         # 清空现有数据，避免重复
         self.tags = []
         self.projects = []
         self.tasks = []
 
+=======
+        # 清空现有数据，避免重复添加
+        self.tags.clear()
+        self.projects.clear()
+        self.tasks.clear()
+        
+>>>>>>> 652ef72d3c34683dd7b334162014ee94b3aacccb
         # Tag
         for i in data.get("tags",[]):
             if i != []:
